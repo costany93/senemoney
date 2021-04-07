@@ -7,11 +7,11 @@ var tabNumeros = [
 ]
 
 var tabSoldes = [
-	"15000",
-	"27000",
-	"35000",
-	"43000",
-	"55000"
+	15000,
+	27000,
+	35000,
+	43000,
+	55000
 ]
 
 var tabCodes = [
@@ -64,14 +64,19 @@ function main(){
 
 	//on appelle notre menu et on sauvegarde l'indice du service choisi dans une variable
 	var rep = menu(numCourant);
-
 	//si l'indice est égal 1 ce qui correspond à afficher le solde de l'utilisateur, on appelle la fonction afficheSolde
-	if(rep == 1){
-		//fonction afficheSolde
-		afficherSolde(numCourant);
-
-		//fonction étape suivante
-		etapeSuivante();
+	switch(rep){
+		case "1":
+			afficherSolde(numCourant);
+			etapeSuivante();
+			break;
+		case "2":
+			transfert(numCourant);
+			etapeSuivante();
+			break;
+		default:
+			alert("le service n'est pas disponible");
+			break;
 	}
 }
 
@@ -79,11 +84,7 @@ function main(){
 // la fonction qui nous permet d'afficher le solde de l'utilisateur on lui demandant son code de sécurité
 function afficherSolde(numero){
 	// je récupère l'indice du numéro courant 
-	for(var i = 0; i < nbreNum; i++){
-		if(numero == tabNumeros[i]){
-			var indice = i;
-		}
-	}
+	var indice = tabNumeros.indexOf(numero);
 
 	//saisi du code de sécurité
 
@@ -96,5 +97,50 @@ function afficherSolde(numero){
 	}else{
 		//sinon on lui renvoie un message d'erreur
 		alert("Le code de sécurité entrez est incorrect");
+	}
+}
+
+function transfert(numero){
+	
+	//on demande le numéro du destinataire
+	var numeroTransfert = window.prompt("Entrez le numero du destinataire");
+
+
+	//on parcours tout les numéros de notre tableau pour vérifier si ce numéro y figure bien
+	for (var i = 0; i<nbreNum; i++) {
+		//si le numéro existe dans notre tableau
+		if (numeroTransfert == tabNumeros[i]) {	
+			//on récupère l'indice du numéro		
+				var indice = tabNumeros.indexOf(numero);
+
+				//on demande à le montant à transferer
+				var montantString = window.prompt("Donnez le montant à transferer");
+				var montant = parseInt(montantString);
+
+				//si le montant est inferieur ou égal à notre solde on effectue le transfert
+				if (montant <= tabSoldes[indice]) {
+					// on demande le code de sécurité
+					var code = window.prompt("Donnez votre code secret");
+
+					//si le code est bon 
+					if (code == tabCodes[indice]) {						
+						alert("Vous avez transferer "+montant+" au "+numeroTransfert);
+						var reste = tabSoldes[indice] - montant;
+
+						//on met à jour le nouveau solde du compte
+						tabSoldes[indice] = reste;
+						alert("Le nouveau solde de votre compte est de "+reste);
+
+						//on affecte le montant transferer au destinataire
+						tabSoldes[i] = tabSoldes[i] + montant;
+					}else{
+						//le code de sécurité est incorrect
+						alert("Le code entré est incorrect");
+					}					
+				}else{
+					//le montant est supérieur à notre solde
+					alert("Transfert impossible votre solde est de "+tabSoldes[indice]);
+				}
+		} 
 	}
 }
